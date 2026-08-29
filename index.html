@@ -178,7 +178,7 @@
   .row-google .row-icon{background:#ffffff;}
 
   .location-block{
-    margin-top:40px;
+    margin-top:0;
     width:100%;
     max-width:460px;
     background:var(--glass);
@@ -192,6 +192,11 @@
     align-items:center;
     gap:16px;
     text-align:right;
+  }
+  .location-list{
+    display:flex;flex-direction:column;gap:14px;
+    width:100%;max-width:460px;
+    margin-top:40px;
   }
   .location-block .row-icon{
     width:42px;height:42px;
@@ -219,8 +224,8 @@
     text-align:center;
   }
   .info-pill .label{display:block;font-size:0.72rem;color:var(--dim);margin-bottom:4px;}
-  .info-pill .value{display:block;font-size:0.92rem;font-weight:700;color:var(--white);direction:ltr;}
-  .info-pill .value.open{color:#7CFFB2;}
+  .info-pill .value{display:block;font-size:0.92rem;font-weight:700;color:#ffffff !important;direction:ltr;}
+  .info-pill .value.open{color:#7CFFB2 !important;}
 
   .section-title{
     margin-top:44px;margin-bottom:18px;
@@ -262,11 +267,43 @@
     text-align:center;padding:0 24px 40px;
     font-size:0.8rem;color:var(--dim);
   }
+
+  .lang-switch{
+    position:fixed;
+    top:18px;
+    left:18px;
+    z-index:5;
+    display:flex;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.35);
+    backdrop-filter:blur(6px) saturate(140%);
+    -webkit-backdrop-filter:blur(6px) saturate(140%);
+    border-radius:999px;
+    padding:4px;
+    gap:4px;
+  }
+  .lang-btn{
+    border:none;background:transparent;color:var(--dim);
+    font-family:'Tajawal';font-weight:700;font-size:0.75rem;
+    padding:6px 14px;border-radius:999px;cursor:pointer;
+    transition:background .25s, color .25s;
+  }
+  .lang-btn.active{background:rgba(255,255,255,0.85);color:#1a1a1a;}
+
+  .row-instagram .row-icon{
+    background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    border:none;
+  }
 </style>
 </head>
 <body>
 
 <div id="stars"></div>
+
+<div class="lang-switch">
+  <button class="lang-btn active" id="btn-ar" onclick="setLang('ar')">عربي</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
 
 <main>
   <div class="brand-circle">
@@ -297,14 +334,14 @@
     </h1>
   </div>
   <div class="brand-sub">Malaki Cafe</div>
-  <p class="tagline">حيث تلتقي رائحة القهوة بدفء اللحظة</p>
+  <p class="tagline" data-ar="حيث تلتقي رائحة القهوة بدفء اللحظة" data-en="Where the aroma of coffee meets the warmth of the moment">حيث تلتقي رائحة القهوة بدفء اللحظة</p>
 
   <div class="menu-list">
     <a href="#" class="menu-row">
       <span class="row-icon" style="font-size:1.6rem;background:rgba(255,255,255,0.14);">☕</span>
       <span class="row-text">
-        <span class="row-label">المشروبات</span>
-        <span class="row-sub">قهوة ومشروبات ساخنة وباردة</span>
+        <span class="row-label" data-ar="المشروبات" data-en="Drinks">المشروبات</span>
+        <span class="row-sub" data-ar="قهوة ومشروبات ساخنة وباردة" data-en="Coffee, hot & cold drinks">قهوة ومشروبات ساخنة وباردة</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
@@ -312,8 +349,8 @@
     <a href="#" class="menu-row">
       <span class="row-icon" style="font-size:1.6rem;background:rgba(255,255,255,0.14);">🥐</span>
       <span class="row-text">
-        <span class="row-label">الحلويات</span>
-        <span class="row-sub">تشكيلة حلويات طازجة يومياً</span>
+        <span class="row-label" data-ar="الحلويات" data-en="Desserts">الحلويات</span>
+        <span class="row-sub" data-ar="تشكيلة حلويات طازجة يومياً" data-en="Fresh desserts, daily">تشكيلة حلويات طازجة يومياً</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
@@ -323,8 +360,8 @@
         <svg viewBox="0 0 24 24" fill="#ffffff"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.2c-.3.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1.1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.5.3.7.9 2.2 1 2.4.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.4 1.5 2.7 1.6.3.1.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.8.8 2.1 1 .3.2.5.2.6.4.1.2.1.7-.2 1.3z"/></svg>
       </span>
       <span class="row-text">
-        <span class="row-label">واتساب</span>
-        <span class="row-sub">راسلنا مباشرة للطلب والاستفسار</span>
+        <span class="row-label" data-ar="واتساب" data-en="WhatsApp">واتساب</span>
+        <span class="row-sub" data-ar="راسلنا مباشرة للطلب والاستفسار" data-en="Message us to order or ask">راسلنا مباشرة للطلب والاستفسار</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
@@ -334,52 +371,85 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
       </span>
       <span class="row-text">
-        <span class="row-label">اتصال</span>
-        <span class="row-sub">تواصل معنا هاتفياً</span>
+        <span class="row-label" data-ar="اتصال" data-en="Call">اتصال</span>
+        <span class="row-sub" data-ar="تواصل معنا هاتفياً" data-en="Give us a call">تواصل معنا هاتفياً</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
 
-    <a href="#" target="_blank" class="menu-row row-google">
+    <a href="https://www.instagram.com/betefor.malaki.cafe" target="_blank" class="menu-row row-instagram">
+      <span class="row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#fff" stroke="none"/></svg>
+      </span>
+      <span class="row-text">
+        <span class="row-label" data-ar="انستغرام" data-en="Instagram">انستغرام</span>
+        <span class="row-sub" data-ar="تابعونا لآخر التحديثات والعروض" data-en="Follow us for updates & offers">تابعونا لآخر التحديثات والعروض</span>
+      </span>
+      <span class="row-arrow">‹</span>
+    </a>
+
+    <a href="https://search.google.com/local/writereview?placeid=ChIJt0l9ZgD39T4R_HkcGX3bCF4" target="_blank" class="menu-row row-google">
       <span class="row-icon">
         <svg viewBox="0 0 48 48" width="22" height="22"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.4 0-13.8 4.2-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.3C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.5 5.3C41.3 36.6 44 30.9 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
       </span>
       <span class="row-text">
-        <span class="row-label">قيّمنا على جوجل</span>
-        <span class="row-sub">رأيك يهمنا</span>
+        <span class="row-label" data-ar="قيّمنا على جوجل — عجمان" data-en="Rate us on Google — Ajman">قيّمنا على جوجل — عجمان</span>
+        <span class="row-sub" data-ar="رأيك يهمنا" data-en="Your feedback matters">رأيك يهمنا</span>
+      </span>
+      <span class="row-arrow">‹</span>
+    </a>
+
+    <a href="https://search.google.com/local/writereview?placeid=ChIJNXtZcIy5ij4RmR3l2J5rAfY" target="_blank" class="menu-row row-google">
+      <span class="row-icon">
+        <svg viewBox="0 0 48 48" width="22" height="22"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.4 0-13.8 4.2-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.3C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.5 5.3C41.3 36.6 44 30.9 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      </span>
+      <span class="row-text">
+        <span class="row-label" data-ar="قيّمنا على جوجل — العين" data-en="Rate us on Google — Al Ain">قيّمنا على جوجل — العين</span>
+        <span class="row-sub" data-ar="رأيك يهمنا" data-en="Your feedback matters">رأيك يهمنا</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
   </div>
 
-  <a href="#" target="_blank" class="location-block">
-    <span class="row-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 12 2a7 7 0 0 1 7 7.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
-    </span>
-    <span class="location-text">
-      <span class="location-title">موقعنا</span>
-      <span class="location-addr">النُّود، الآقحوان 1 — أبوظبي</span>
-    </span>
-  </a>
+  <div class="location-list">
+    <a href="https://maps.app.goo.gl/w9A3umXRk9KF4j6q8" target="_blank" class="location-block">
+      <span class="row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 12 2a7 7 0 0 1 7 7.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+      </span>
+      <span class="location-text">
+        <span class="location-title" data-ar="فرع عجمان" data-en="Ajman Branch">فرع عجمان</span>
+        <span class="location-addr" data-ar="الروضة 1 — عجمان" data-en="Al Rawdha 1 — Ajman">الروضة 1 — عجمان</span>
+      </span>
+    </a>
+    <a href="https://maps.app.goo.gl/jdSgCTffNdAubiB37" target="_blank" class="location-block">
+      <span class="row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 12 2a7 7 0 0 1 7 7.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+      </span>
+      <span class="location-text">
+        <span class="location-title" data-ar="فرع العين" data-en="Al Ain Branch">فرع العين</span>
+        <span class="location-addr" data-ar="النُّود، الآقحوان 1 — العين" data-en="Al Nud, Al Aqhuwan 1 — Al Ain">النُّود، الآقحوان 1 — العين</span>
+      </span>
+    </a>
+  </div>
 
   <div class="info-strip">
     <div class="info-pill">
-      <span class="label">الدوام</span>
-      <span class="value open">مفتوح حتى 11:00 م</span>
+      <span class="label" data-ar="الدوام" data-en="Hours">الدوام</span>
+      <span class="value open" data-ar="مفتوح حتى 12:00 ص" data-en="Open until 12:00 AM">مفتوح حتى 12:00 ص</span>
     </div>
     <div class="info-pill">
-      <span class="label">الهاتف</span>
+      <span class="label" data-ar="الهاتف" data-en="Phone">الهاتف</span>
       <span class="value">050 839 9220</span>
     </div>
   </div>
 
-  <h2 class="section-title">من قائمتنا</h2>
+  <h2 class="section-title" data-ar="من قائمتنا" data-en="From Our Menu">من قائمتنا</h2>
   <div class="menu-preview">
     <div class="item-row">
       <span class="item-emoji">☕</span>
       <span class="item-info">
         <span class="item-name">Spanish Cortado</span>
-        <span class="item-desc">إسبريسو قوي مع لمسة حليب مكثف</span>
+        <span class="item-desc" data-ar="إسبريسو قوي مع لمسة حليب مكثف" data-en="Strong espresso with a touch of condensed milk">إسبريسو قوي مع لمسة حليب مكثف</span>
       </span>
       <span class="item-price">27.93 د.إ</span>
     </div>
@@ -387,7 +457,7 @@
       <span class="item-emoji">☕</span>
       <span class="item-info">
         <span class="item-name">Cappuccino</span>
-        <span class="item-desc">إسبريسو مع حليب مبخر ورغوة كثيفة</span>
+        <span class="item-desc" data-ar="إسبريسو مع حليب مبخر ورغوة كثيفة" data-en="Espresso with steamed milk & thick foam">إسبريسو مع حليب مبخر ورغوة كثيفة</span>
       </span>
       <span class="item-price">27.93 د.إ</span>
     </div>
@@ -395,7 +465,7 @@
       <span class="item-emoji">💗</span>
       <span class="item-info">
         <span class="item-name">Redvelvet Latte</span>
-        <span class="item-desc">إسبريسو بنكهة الردفلفت وحليب مبخر</span>
+        <span class="item-desc" data-ar="إسبريسو بنكهة الردفلفت وحليب مبخر" data-en="Espresso with red velvet flavor & steamed milk">إسبريسو بنكهة الردفلفت وحليب مبخر</span>
       </span>
       <span class="item-price">30.59 د.إ</span>
     </div>
@@ -403,7 +473,7 @@
       <span class="item-emoji">🥐</span>
       <span class="item-info">
         <span class="item-name">Betefor Nutella</span>
-        <span class="item-desc">بتفور مقرمش محشو بالنوتيلا</span>
+        <span class="item-desc" data-ar="بتفور مقرمش محشو بالنوتيلا" data-en="Crispy Betefor with rich Nutella filling">بتفور مقرمش محشو بالنوتيلا</span>
       </span>
       <span class="item-price">40.00 د.إ</span>
     </div>
@@ -411,14 +481,14 @@
       <span class="item-emoji">🍦</span>
       <span class="item-info">
         <span class="item-name">Creamy Pistachio</span>
-        <span class="item-desc">مشروب كريمي بنكهة الفستق</span>
+        <span class="item-desc" data-ar="مشروب كريمي بنكهة الفستق" data-en="Creamy drink with rich pistachio flavor">مشروب كريمي بنكهة الفستق</span>
       </span>
       <span class="item-price">33.25 د.إ</span>
     </div>
   </div>
 </main>
 
-<footer>© 2026 Betefor Malaki Cafe</footer>
+<footer data-ar="© 2026 بتفور ملكي كافيه" data-en="© 2026 Betefor Malaki Cafe">© 2026 Betefor Malaki Cafe</footer>
 
 <script>
   const container = document.getElementById('stars');
@@ -437,6 +507,16 @@
     s.style.setProperty('--drift', (Math.random()*40 - 20) + 'px');
     s.style.opacity = (Math.random()*0.5 + 0.4).toFixed(2);
     container.appendChild(s);
+  }
+
+  function setLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.querySelectorAll('[data-ar]').forEach(el=>{
+      el.textContent = lang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+    });
+    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   }
 </script>
 

@@ -377,6 +377,17 @@
       <span class="row-arrow">‹</span>
     </a>
 
+    <a href="#" id="vcard-btn" class="menu-row">
+      <span class="row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10.5" r="2"/><path d="M6 16c.5-1.8 1.8-3 3-3s2.5 1.2 3 3"/><path d="M14 9h5M14 12.5h5"/></svg>
+      </span>
+      <span class="row-text">
+        <span class="row-label" data-ar="حفظ جهة الاتصال" data-en="Save Contact">حفظ جهة الاتصال</span>
+        <span class="row-sub" data-ar="احفظ بياناتنا في جوالك بضغطة واحدة" data-en="Add our details to your phone">احفظ بياناتنا في جوالك بضغطة واحدة</span>
+      </span>
+      <span class="row-arrow">‹</span>
+    </a>
+
     <a href="https://www.instagram.com/betefor.malaki.cafe" target="_blank" class="menu-row row-instagram">
       <span class="row-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#fff" stroke="none"/></svg>
@@ -518,6 +529,30 @@
     document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   }
+
+  document.getElementById('vcard-btn').addEventListener('click', function(e){
+    e.preventDefault();
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'FN:Betefor Malaki Cafe',
+      'ORG:Betefor Malaki Cafe',
+      'TEL;TYPE=CELL:+971508399220',
+      'URL:https://smartwebuae-hash.github.io/betefor-cafe/',
+      'ADR:;;Al Nud, Al Aqhuwan 1;Al Ain;;;United Arab Emirates',
+      'NOTE:Ajman Branch: https://maps.app.goo.gl/w9A3umXRk9KF4j6q8 | Al Ain Branch: https://maps.app.goo.gl/jdSgCTffNdAubiB37',
+      'END:VCARD'
+    ].join('\n');
+    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Betefor-Malaki-Cafe.vcf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  });
 </script>
 
 </body>

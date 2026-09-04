@@ -283,6 +283,35 @@
   }
   .lang-btn.active{background:var(--cream);color:#3a2a15;}
 
+  .jumaa-strip{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:64px;
+    z-index:5;
+    overflow:hidden;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+  }
+  .jumaa-strip .jumaa-track{
+    display:inline-block;
+    white-space:nowrap;
+    font-family:'Amiri', 'Traditional Arabic', serif;
+    font-weight:700;
+    font-size:26px;
+    color:#faf1e2;
+    text-shadow:0 2px 10px rgba(0,0,0,0.45), 0 0 18px rgba(240,172,63,0.35);
+    letter-spacing:0.5px;
+    animation:jumaa-scroll 16s linear infinite;
+    transform:translateX(-110%);
+  }
+  @keyframes jumaa-scroll{
+    from{ transform:translateX(-110%); }
+    to{ transform:translateX(110vw); }
+  }
+
   #menu-modal{
     position:fixed;inset:0;z-index:60;
     display:none;
@@ -346,6 +375,21 @@
 </style>
 </head>
 <body>
+
+<div class="jumaa-strip" id="jumaaStrip" style="display:none;">
+  <div class="jumaa-track">اللهم صلِّ وسلم وبارك على سيدنا محمد وعلى آله وصحبه أجمعين ﷺ &nbsp;&nbsp;&nbsp;&nbsp; جمعة مباركة</div>
+</div>
+<script>
+(function(){
+  try{
+    var isFriday = new Date().getDay() === 5;
+    var strip = document.getElementById('jumaaStrip');
+    if(strip && isFriday){
+      strip.style.display = 'flex';
+    }
+  }catch(e){}
+})();
+</script>
 
 <div id="stars"></div>
 

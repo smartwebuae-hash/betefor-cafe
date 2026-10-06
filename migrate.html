@@ -29,7 +29,14 @@
 <script>
   const SUPABASE_URL = 'https://iekotptltmkjmieauhqc.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let supabase = null;
+  try {
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } catch (e) {
+    console.warn('Supabase init failed', e);
+  }
 
   const CATEGORIES = [
     { slug:'kg1', file:'menu-kg1.html', count:61 },
@@ -92,9 +99,18 @@
     setStatus(cat.slug, 'تم ✓ (' + uploaded + ' صورة)', 'ok');
   }
 
-  async function startMigration(){
+  function startMigration(){
+    document.getElementById('summary').textContent = 'جاري التحقق من الاتصال...';
+    if (!supabase) {
+      document.getElementById('summary').textContent = 'تعذر الاتصال بقاعدة البيانات. تحقق من اتصال الإنترنت وأعد تحميل الصفحة، ثم حاول مرة أخرى.';
+      return;
+    }
     document.getElementById('startBtn').disabled = true;
     document.getElementById('summary').textContent = 'جاري النقل... لا تغلق الصفحة';
+    runMigration();
+  }
+
+  async function runMigration(){
     for (const cat of CATEGORIES) {
       await migrateCategory(cat);
     }

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم بيتيفور</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:Tajawal,sans-serif;background:#1f140d;color:#fff;min-height:100vh;padding:20px;}
+  h1{font-size:1.2rem;color:#F3D27A;margin-bottom:18px;text-align:center;}
+  h2{font-size:1rem;color:#F3D27A;margin:24px 0 12px;}
+  .card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:16px;margin-bottom:16px;}
+  label{display:block;font-size:0.8rem;color:#ccc;margin-bottom:4px;margin-top:10px;}
+  input,select{
+    width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.08);color:#fff;font-size:0.9rem;font-family:inherit;
+  }
+  button{
+    margin-top:14px;padding:11px 18px;border:none;border-radius:999px;
+    background:#F3D27A;color:#2a1a0d;font-weight:700;font-size:0.85rem;cursor:pointer;width:100%;
+  }
+  button.danger{background:#e5484d;color:#fff;width:auto;padding:8px 10px;font-size:0.75rem;}
+  select#catSelect{margin-bottom:14px;}
+  .add-box{text-align:center;}
+  .add-box input[type=file]{display:none;}
+  .add-label{
+    display:inline-block;background:#F3D27A;color:#2a1a0d;font-weight:700;
+    padding:12px 24px;border-radius:999px;cursor:pointer;
+  }
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;}
+  .item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;}
+  .item img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;}
+  .item button{margin-top:0;border-radius:0;}
+  .msg{text-align:center;color:#F3D27A;font-size:0.82rem;margin-top:8px;min-height:18px;}
+</style>
+</head>
+<body>
+
+<h1>لوحة تحكم بيتيفور</h1>
+
+<h2>الإعدادات العامة</h2>
+<div class="card">
+  <label>رقم الواتساب (بدون + أو رموز، مثال: 971504712215)</label>
+  <input type="text" id="whatsapp_number">
+  <label>رقم الهاتف</label>
+  <input type="text" id="phone_number">
+  <label>الجملة التعريفية (عربي)</label>
+  <input type="text" id="tagline_ar">
+  <label>الجملة التعريفية (إنجليزي)</label>
+  <input type="text" id="tagline_en">
+  <label>نوع الخط</label>
+  <select id="font_family">
+    <option value="Tajawal">Tajawal</option>
+    <option value="Cairo">Cairo</option>
+    <option value="Almarai">Almarai</option>
+    <option value="Amiri">Amiri</option>
+    <option value="Cormorant Garamond">Cormorant Garamond</option>
+  </select>
+  <button onclick="saveSettings()">حفظ الإعدادات</button>
+  <div class="msg" id="settings-msg"></div>
+</div>
+
+<h2>صور المنيو</h2>
+<div class="card">
+  <select id="catSelect" onchange="loadCategory()">
+    <option value="kg1">كيلو</option>
+    <option value="half-kg">نص كيلو</option>
+    <option value="mid-vasa">مزهرية وسط</option>
+    <option value="small-vasa">مزهرية صغيرة</option>
+    <option value="long-vasa">مزهرية طويلة</option>
+    <option value="big-vasa">مزهرية كبيرة</option>
+    <option value="big-acrylic">أكريليك أسود كبير</option>
+    <option value="small-acrylic">أكريليك أسود صغير</option>
+    <option value="elba">إلبا</option>
+    <option value="mala">مله</option>
+    <option value="senya">سنيّة</option>
+  </select>
+
+  <div class="add-box">
+    <label class="add-label" for="fileInput">+ إضافة صورة</label>
+    <input type="file" id="fileInput" accept="image/*" onchange="addPhoto()">
+  </div>
+
+  <div class="msg" id="gallery-msg"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://iekotptltmkjmieauhqc.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN';
+  let supabase = null;
+  try {
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } catch (e) { console.warn('init failed', e); }
+
+  function currentCat(){ return document.getElementById('catSelect').value; }
+
+  async function loadSettings(){
+    if (!supabase) { document.getElementById('settings-msg').textContent = 'تعذر الاتصال بقاعدة البيانات'; return; }
+    const { data, error } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+    if (error || !data) { document.getElementById('settings-msg').textContent = 'خطأ بالتحميل'; return; }
+    document.getElementById('whatsapp_number').value = data.whatsapp_number || '';
+    document.getElementById('phone_number').value = data.phone_number || '';
+    document.getElementById('tagline_ar').value = data.tagline_ar || '';
+    document.getElementById('tagline_en').value = data.tagline_en || '';
+    document.getElementById('font_family').value = data.font_family || 'Tajawal';
+  }
+
+  async function saveSettings(){
+    if (!supabase) { document.getElementById('settings-msg').textContent = 'تعذر الاتصال بقاعدة البيانات'; return; }
+    const payload = {
+      whatsapp_number: document.getElementById('whatsapp_number').value.trim(),
+      phone_number: document.getElementById('phone_number').value.trim(),
+      tagline_ar: document.getElementById('tagline_ar').value.trim(),
+      tagline_en: document.getElementById('tagline_en').value.trim(),
+      font_family: document.getElementById('font_family').value,
+      updated_at: new Date().toISOString()
+    };
+    const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+    const msg = document.getElementById('settings-msg');
+    msg.textContent = error ? ('خطأ: ' + error.message) : 'تم الحفظ بنجاح ✓';
+  }
+
+  async function loadCategory(){
+    if (!supabase) return;
+    const cat = currentCat();
+    document.getElementById('gallery-msg').textContent = 'جاري التحميل...';
+    const { data, error } = await supabase.from('gallery_items').select('*').eq('category', cat).order('position', { ascending: true });
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    if (error) { document.getElementById('gallery-msg').textContent = 'خطأ: ' + error.message; return; }
+    (data || []).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = '<img src="' + item.image_url + '"><button class="danger" onclick="deletePhoto(\'' + item.id + '\')">حذف</button>';
+      grid.appendChild(div);
+    });
+    document.getElementById('gallery-msg').textContent = (data || []).length + ' صورة بهذا القسم';
+  }
+
+  async function addPhoto(){
+    const file = document.getElementById('fileInput').files[0];
+    if (!file || !supabase) return;
+    document.getElementById('gallery-msg').textContent = 'جاري الرفع...';
+    const cat = currentCat();
+    const { data: existing } = await supabase.from('gallery_items').select('position').eq('category', cat).order('position', { ascending: false }).limit(1);
+    const nextPos = existing && existing.length ? existing[0].position + 1 : 1;
+    const path = cat + '/img-' + Date.now() + '.jpg';
+    const { error: upErr } = await supabase.storage.from('gallery').upload(path, file, { contentType: file.type || 'image/jpeg' });
+    if (upErr) { document.getElementById('gallery-msg').textContent = 'خطأ بالرفع: ' + upErr.message; return; }
+    const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(path);
+    const { error: insErr } = await supabase.from('gallery_items').insert([{ category: cat, position: nextPos, image_url: urlData.publicUrl }]);
+    if (insErr) { document.getElementById('gallery-msg').textContent = 'خطأ بالحفظ: ' + insErr.message; return; }
+    document.getElementById('fileInput').value = '';
+    loadCategory();
+  }
+
+  async function deletePhoto(id){
+    if (!confirm('حذف هذه الصورة؟')) return;
+    document.getElementById('gallery-msg').textContent = 'جاري الحذف...';
+    const { error } = await supabase.from('gallery_items').delete().eq('id', id);
+    if (error) { document.getElementById('gallery-msg').textContent = 'خطأ: ' + error.message; return; }
+    loadCategory();
+  }
+
+  loadSettings();
+  loadCategory();
+</script>
+
+</body>
+</html>

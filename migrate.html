@@ -100,6 +100,7 @@
   }
 
   function startMigration(){
+    alert('الزر اشتغل! جاري المتابعة...');
     document.getElementById('summary').textContent = 'جاري التحقق من الاتصال...';
     if (!supabase) {
       document.getElementById('summary').textContent = 'تعذر الاتصال بقاعدة البيانات. تحقق من اتصال الإنترنت وأعد تحميل الصفحة، ثم حاول مرة أخرى.';

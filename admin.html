@@ -91,7 +91,7 @@
   // ===== هذا الجزء يشتغل فوراً، بدون انتظار أي مكتبة خارجية =====
   const SUPABASE_URL = 'https://iekotptltmkjmieauhqc.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN';
-  let supabase = null;
+  let sb = null;
   let ready = false;
 
   function currentCat(){ return document.getElementById('catSelect').value; }
@@ -111,14 +111,14 @@
       font_family: document.getElementById('font_family').value,
       updated_at: new Date().toISOString()
     };
-    const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+    const { error } = await sb.from('site_settings').update(payload).eq('id', 1);
     const msg = document.getElementById('settings-msg');
     msg.textContent = error ? ('خطأ: ' + error.message) : 'تم الحفظ بنجاح ✓';
   }
 
   async function loadSettings(){
     if (!ready) return;
-    const { data, error } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+    const { data, error } = await sb.from('site_settings').select('*').eq('id', 1).single();
     if (error || !data) return;
     document.getElementById('whatsapp_number').value = data.whatsapp_number || '';
     document.getElementById('phone_number').value = data.phone_number || '';
@@ -131,7 +131,7 @@
     if (!ready) { notReady('gallery-msg'); return; }
     const cat = currentCat();
     document.getElementById('gallery-msg').textContent = 'جاري التحميل...';
-    const { data, error } = await supabase.from('gallery_items').select('*').eq('category', cat).order('position', { ascending: true });
+    const { data, error } = await sb.from('gallery_items').select('*').eq('category', cat).order('position', { ascending: true });
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
     if (error) { document.getElementById('gallery-msg').textContent = 'خطأ: ' + error.message; return; }
@@ -150,13 +150,13 @@
     if (!ready) { notReady('gallery-msg'); return; }
     document.getElementById('gallery-msg').textContent = 'جاري الرفع...';
     const cat = currentCat();
-    const { data: existing } = await supabase.from('gallery_items').select('position').eq('category', cat).order('position', { ascending: false }).limit(1);
+    const { data: existing } = await sb.from('gallery_items').select('position').eq('category', cat).order('position', { ascending: false }).limit(1);
     const nextPos = existing && existing.length ? existing[0].position + 1 : 1;
     const path = cat + '/img-' + Date.now() + '.jpg';
-    const { error: upErr } = await supabase.storage.from('gallery').upload(path, file, { contentType: file.type || 'image/jpeg' });
+    const { error: upErr } = await sb.storage.from('gallery').upload(path, file, { contentType: file.type || 'image/jpeg' });
     if (upErr) { document.getElementById('gallery-msg').textContent = 'خطأ بالرفع: ' + upErr.message; return; }
-    const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(path);
-    const { error: insErr } = await supabase.from('gallery_items').insert([{ category: cat, position: nextPos, image_url: urlData.publicUrl }]);
+    const { data: urlData } = sb.storage.from('gallery').getPublicUrl(path);
+    const { error: insErr } = await sb.from('gallery_items').insert([{ category: cat, position: nextPos, image_url: urlData.publicUrl }]);
     if (insErr) { document.getElementById('gallery-msg').textContent = 'خطأ بالحفظ: ' + insErr.message; return; }
     document.getElementById('fileInput').value = '';
     loadCategory();
@@ -166,7 +166,7 @@
     if (!ready) { notReady('gallery-msg'); return; }
     if (!confirm('حذف هذه الصورة؟')) return;
     document.getElementById('gallery-msg').textContent = 'جاري الحذف...';
-    const { error } = await supabase.from('gallery_items').delete().eq('id', id);
+    const { error } = await sb.from('gallery_items').delete().eq('id', id);
     if (error) { document.getElementById('gallery-msg').textContent = 'خطأ: ' + error.message; return; }
     loadCategory();
   }
@@ -186,7 +186,7 @@
     s.onload = function(){
       clearTimeout(timeoutId);
       try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         ready = true;
         diag.textContent = 'متصل بقاعدة البيانات ✓';
         diag.style.color = '#8aff9e';

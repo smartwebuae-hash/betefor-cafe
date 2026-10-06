@@ -7,7 +7,8 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:Tajawal,sans-serif;background:#1f140d;color:#fff;min-height:100vh;padding:20px;}
-  h1{font-size:1.2rem;color:#F3D27A;margin-bottom:18px;text-align:center;}
+  h1{font-size:1.2rem;color:#F3D27A;margin-bottom:12px;text-align:center;}
+  #diag{text-align:center;padding:10px;margin-bottom:14px;border-radius:10px;background:rgba(255,255,255,0.1);font-size:0.8rem;}
   h2{font-size:1rem;color:#F3D27A;margin:24px 0 12px;}
   .card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:16px;margin-bottom:16px;}
   label{display:block;font-size:0.8rem;color:#ccc;margin-bottom:4px;margin-top:10px;}
@@ -37,7 +38,7 @@
 <body>
 
 <h1>لوحة تحكم بيتيفور</h1>
-<div id="diag" style="text-align:center;padding:10px;margin-bottom:14px;border-radius:10px;background:rgba(255,255,255,0.1);font-size:0.8rem;">جاري الفحص...</div>
+<div id="diag">جاري الاتصال بقاعدة البيانات...</div>
 
 <h2>الإعدادات العامة</h2>
 <div class="card">
@@ -57,7 +58,7 @@
     <option value="Amiri">Amiri</option>
     <option value="Cormorant Garamond">Cormorant Garamond</option>
   </select>
-  <button onclick="saveSettings()">حفظ الإعدادات</button>
+  <button type="button" onclick="saveSettings()">حفظ الإعدادات</button>
   <div class="msg" id="settings-msg"></div>
 </div>
 
@@ -86,48 +87,22 @@
   <div class="grid" id="grid"></div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
+  // ===== هذا الجزء يشتغل فوراً، بدون انتظار أي مكتبة خارجية =====
   const SUPABASE_URL = 'https://iekotptltmkjmieauhqc.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN';
   let supabase = null;
-  try {
-    if (window.supabase) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-  } catch (e) { console.warn('init failed', e); }
-
-  (function(){
-    const d = document.getElementById('diag');
-    if (!d) return;
-    if (window.supabase && supabase) {
-      d.textContent = 'الفحص: المكتبة والاتصال تمام ✓ — لو الأزرار لسا ما تستجيب، المشكلة مو هنا';
-      d.style.color = '#8aff9e';
-    } else if (window.supabase && !supabase) {
-      d.textContent = 'الفحص: المكتبة تحمّلت، لكن فشل إنشاء الاتصال';
-      d.style.color = '#ff8a8a';
-    } else {
-      d.textContent = 'الفحص: مكتبة Supabase ما تحمّلت إطلاقاً (مشكلة شبكة/حجب)';
-      d.style.color = '#ff8a8a';
-    }
-  })();
+  let ready = false;
 
   function currentCat(){ return document.getElementById('catSelect').value; }
 
-  async function loadSettings(){
-    if (!supabase) { document.getElementById('settings-msg').textContent = 'تعذر الاتصال بقاعدة البيانات'; return; }
-    const { data, error } = await supabase.from('site_settings').select('*').eq('id', 1).single();
-    if (error || !data) { document.getElementById('settings-msg').textContent = 'خطأ بالتحميل'; return; }
-    document.getElementById('whatsapp_number').value = data.whatsapp_number || '';
-    document.getElementById('phone_number').value = data.phone_number || '';
-    document.getElementById('tagline_ar').value = data.tagline_ar || '';
-    document.getElementById('tagline_en').value = data.tagline_en || '';
-    document.getElementById('font_family').value = data.font_family || 'Tajawal';
+  function notReady(msgElId){
+    const el = document.getElementById(msgElId);
+    if (el) el.textContent = 'تعذر الاتصال بقاعدة البيانات. تحقق من الإنترنت وأعد تحميل الصفحة.';
   }
 
   async function saveSettings(){
-    alert('الزر اشتغل! جاري المتابعة...');
-    if (!supabase) { document.getElementById('settings-msg').textContent = 'تعذر الاتصال بقاعدة البيانات'; return; }
+    if (!ready) { notReady('settings-msg'); return; }
     const payload = {
       whatsapp_number: document.getElementById('whatsapp_number').value.trim(),
       phone_number: document.getElementById('phone_number').value.trim(),
@@ -141,8 +116,19 @@
     msg.textContent = error ? ('خطأ: ' + error.message) : 'تم الحفظ بنجاح ✓';
   }
 
+  async function loadSettings(){
+    if (!ready) return;
+    const { data, error } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+    if (error || !data) return;
+    document.getElementById('whatsapp_number').value = data.whatsapp_number || '';
+    document.getElementById('phone_number').value = data.phone_number || '';
+    document.getElementById('tagline_ar').value = data.tagline_ar || '';
+    document.getElementById('tagline_en').value = data.tagline_en || '';
+    document.getElementById('font_family').value = data.font_family || 'Tajawal';
+  }
+
   async function loadCategory(){
-    if (!supabase) return;
+    if (!ready) { notReady('gallery-msg'); return; }
     const cat = currentCat();
     document.getElementById('gallery-msg').textContent = 'جاري التحميل...';
     const { data, error } = await supabase.from('gallery_items').select('*').eq('category', cat).order('position', { ascending: true });
@@ -152,7 +138,7 @@
     (data || []).forEach(item => {
       const div = document.createElement('div');
       div.className = 'item';
-      div.innerHTML = '<img src="' + item.image_url + '"><button class="danger" onclick="deletePhoto(\'' + item.id + '\')">حذف</button>';
+      div.innerHTML = '<img src="' + item.image_url + '"><button type="button" class="danger" onclick="deletePhoto(\'' + item.id + '\')">حذف</button>';
       grid.appendChild(div);
     });
     document.getElementById('gallery-msg').textContent = (data || []).length + ' صورة بهذا القسم';
@@ -160,7 +146,8 @@
 
   async function addPhoto(){
     const file = document.getElementById('fileInput').files[0];
-    if (!file || !supabase) return;
+    if (!file) return;
+    if (!ready) { notReady('gallery-msg'); return; }
     document.getElementById('gallery-msg').textContent = 'جاري الرفع...';
     const cat = currentCat();
     const { data: existing } = await supabase.from('gallery_items').select('position').eq('category', cat).order('position', { ascending: false }).limit(1);
@@ -176,6 +163,7 @@
   }
 
   async function deletePhoto(id){
+    if (!ready) { notReady('gallery-msg'); return; }
     if (!confirm('حذف هذه الصورة؟')) return;
     document.getElementById('gallery-msg').textContent = 'جاري الحذف...';
     const { error } = await supabase.from('gallery_items').delete().eq('id', id);
@@ -183,8 +171,39 @@
     loadCategory();
   }
 
-  loadSettings();
-  loadCategory();
+  // ===== تحميل مكتبة Supabase بطريقة لا تعلّق الصفحة =====
+  (function(){
+    const diag = document.getElementById('diag');
+    const timeoutId = setTimeout(function(){
+      if (!ready) {
+        diag.textContent = 'انتهت المهلة: تعذر تحميل مكتبة الاتصال (قد تكون الشبكة تحجب unpkg.com). الأزرار تشتغل لكن الحفظ لن ينجح حتى يتصل.';
+        diag.style.color = '#ff8a8a';
+      }
+    }, 7000);
+
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/@supabase/supabase-js@2';
+    s.onload = function(){
+      clearTimeout(timeoutId);
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        ready = true;
+        diag.textContent = 'متصل بقاعدة البيانات ✓';
+        diag.style.color = '#8aff9e';
+        loadSettings();
+        loadCategory();
+      } catch (e) {
+        diag.textContent = 'خطأ بالاتصال: ' + e.message;
+        diag.style.color = '#ff8a8a';
+      }
+    };
+    s.onerror = function(){
+      clearTimeout(timeoutId);
+      diag.textContent = 'فشل تحميل مكتبة الاتصال نهائياً (مكتبة unpkg.com غير متاحة من شبكتك)';
+      diag.style.color = '#ff8a8a';
+    };
+    document.head.appendChild(s);
+  })();
 </script>
 
 </body>

@@ -110,6 +110,7 @@
   }
 
   async function saveSettings(){
+    alert('الزر اشتغل! جاري المتابعة...');
     if (!supabase) { document.getElementById('settings-msg').textContent = 'تعذر الاتصال بقاعدة البيانات'; return; }
     const payload = {
       whatsapp_number: document.getElementById('whatsapp_number').value.trim(),

@@ -923,10 +923,8 @@
     setTimeout(()=>URL.revokeObjectURL(url), 3000);
   });
 
-  (async function loadSiteSettings(){
+  async function applySiteSettings(sb){
     try {
-      if (!window.supabase) return;
-      const sb = window.supabase.createClient('https://iekotptltmkjmieauhqc.supabase.co', 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN');
       const { data, error } = await sb.from('site_settings').select('*').eq('id', 1).single();
       if (error || !data) return;
 
@@ -949,7 +947,20 @@
         document.documentElement.style.setProperty('--dynamic-font', "'" + data.font_family + "'");
         document.body.style.fontFamily = "'" + data.font_family + "', sans-serif";
       }
-    } catch (e) { console.warn('settings load failed', e); }
+    } catch (e) { console.warn('settings apply failed', e); }
+  }
+
+  (function loadSupabaseAndSettings(){
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/@supabase/supabase-js@2';
+    s.onload = function(){
+      try {
+        const sb = window.supabase.createClient('https://iekotptltmkjmieauhqc.supabase.co', 'sb_publishable_35u5V1apSr2-DCpjp8ltmg_gIJzhXEN');
+        applySiteSettings(sb);
+      } catch (e) { console.warn('supabase init failed', e); }
+    };
+    s.onerror = function(){ console.warn('supabase script failed to load'); };
+    document.head.appendChild(s);
   })();
 </script>
 

@@ -139,8 +139,15 @@
     font-weight:400;
     font-size:0.95rem;
     color:var(--dim);
-    margin-bottom:64px;
+    margin-bottom:28px;
     max-width:340px;
+  }
+  .order-hint{
+    font-family:'Amiri', serif;
+    font-weight:700;
+    font-size:1.05rem;
+    color:var(--cream);
+    margin-bottom:24px;
   }
 
   .menu-list{
@@ -472,24 +479,16 @@
       </svg><span class="silver-text">r</span>
     </h1>
   </div>
-  <div class="brand-sub">Malaki Cafe</div>
-  <p class="tagline" data-ar="حيث تلتقي رائحة القهوة بدفء اللحظة" data-en="Where the aroma of coffee meets the warmth of the moment">حيث تلتقي رائحة القهوة بدفء اللحظة</p>
+  <p class="tagline" data-ar="حلى فاخر بنكهات أصيلة، يُصنع بشغف ليُسعد كل لحظة" data-en="Fine sweets with authentic flavors, crafted with passion for every moment">حلى فاخر بنكهات أصيلة، يُصنع بشغف ليُسعد كل لحظة</p>
+
+  <p class="order-hint" data-ar="اطلب من قائمتنا مباشرة عبر واتساب 👇" data-en="Order directly from our menu via WhatsApp 👇">اطلب من قائمتنا مباشرة عبر واتساب 👇</p>
 
   <div class="menu-list">
-    <a href="#" class="menu-row" onclick="openMenu('drinks');return false;">
-      <span class="row-icon" style="font-size:1.6rem;background:rgba(255,255,255,0.14);">☕</span>
+    <a href="#" class="menu-row" onclick="openFullMenu();return false;">
+      <span class="row-icon" style="font-size:1.4rem;background:rgba(255,255,255,0.14);">📖</span>
       <span class="row-text">
-        <span class="row-label" data-ar="المشروبات" data-en="Drinks">المشروبات</span>
-        <span class="row-sub" data-ar="قهوة ومشروبات ساخنة وباردة" data-en="Coffee, hot & cold drinks">قهوة ومشروبات ساخنة وباردة</span>
-      </span>
-      <span class="row-arrow">‹</span>
-    </a>
-
-    <a href="#" class="menu-row" onclick="openMenu('desserts');return false;">
-      <span class="row-icon" style="font-size:1.6rem;background:rgba(255,255,255,0.14);">🥐</span>
-      <span class="row-text">
-        <span class="row-label" data-ar="الحلويات" data-en="Desserts">الحلويات</span>
-        <span class="row-sub" data-ar="تشكيلة حلويات طازجة يومياً" data-en="Fresh desserts, daily">تشكيلة حلويات طازجة يومياً</span>
+        <span class="row-label" data-ar="قائمة بيتيفور الكاملة" data-en="Full Betefor Menu">قائمة بيتيفور الكاملة</span>
+        <span class="row-sub" data-ar="تصفح كل الأقسام والأصناف" data-en="Browse all sections and items">تصفح كل الأقسام والأصناف</span>
       </span>
       <span class="row-arrow">‹</span>
     </a>
@@ -590,34 +589,6 @@
     <div class="info-pill">
       <span class="label" data-ar="الهاتف" data-en="Phone">الهاتف</span>
       <span class="value">050 839 9220</span>
-    </div>
-  </div>
-
-  <h2 class="section-title" data-ar="معرض الصور" data-en="Gallery">معرض الصور</h2>
-  <div class="gallery-grid">
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
-    </div>
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
-    </div>
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
-    </div>
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
-    </div>
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
-    </div>
-    <div class="gallery-slot">
-      <span class="gallery-icon">📷</span>
-      <span class="gallery-label" data-ar="أضف صورة" data-en="Add Photo">أضف صورة</span>
     </div>
   </div>
 
@@ -883,6 +854,40 @@
 
   function closeMenu(){
     document.getElementById('menu-modal').classList.remove('open');
+  }
+
+  const FULL_MENU_CATS = [
+    { href:'menu-kg1.html',          name:'كيلو',               count:61 },
+    { href:'menu-half-kg.html',      name:'نص كيلو',             count:31 },
+    { href:'menu-mid-vasa.html',     name:'مزهرية وسط',          count:33 },
+    { href:'menu-small-vasa.html',   name:'مزهرية صغيرة',        count:34 },
+    { href:'menu-long-vasa.html',    name:'مزهرية طويلة',        count:31 },
+    { href:'menu-big-vasa.html',     name:'مزهرية كبيرة',        count:28 },
+    { href:'menu-big-acrylic.html',  name:'أكريليك أسود كبير',   count:21 },
+    { href:'menu-small-acrylic.html',name:'أكريليك أسود صغير',   count:19 },
+    { href:'menu-elba.html',         name:'إلبا',                count:24 },
+    { href:'menu-mala.html',         name:'مله',                 count:16 },
+    { href:'menu-senya.html',        name:'سنيّة',               count:11 },
+  ];
+
+  function openFullMenu(){
+    document.getElementById('modal-title').textContent = 'قائمة بيتيفور الكاملة';
+    document.getElementById('modal-tabs').innerHTML = '';
+    const bodyEl = document.getElementById('modal-body');
+    bodyEl.innerHTML = '';
+    FULL_MENU_CATS.forEach(function(cat){
+      const row = document.createElement('a');
+      row.href = cat.href;
+      row.className = 'modal-item';
+      row.style.textDecoration = 'none';
+      row.style.cursor = 'pointer';
+      row.innerHTML =
+        '<div><div class="modal-item-name">' + cat.name + '</div>' +
+        '<div class="modal-item-desc">' + cat.count + ' صورة</div></div>' +
+        '<div class="modal-item-price" style="color:var(--cream);">‹</div>';
+      bodyEl.appendChild(row);
+    });
+    document.getElementById('menu-modal').classList.add('open');
   }
 
   document.getElementById('vcard-btn').addEventListener('click', function(e){    e.preventDefault();

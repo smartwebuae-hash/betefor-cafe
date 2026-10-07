@@ -72,8 +72,15 @@
 
   async function run(){
     const statusEl = document.getElementById('status');
+    statusEl.textContent = 'جاري التحقق من الصور الموجودة مسبقاً...';
+    const { data: existing } = await sb.from('gallery_items').select('position').eq('category', SLUG).order('position', { ascending: false }).limit(1);
+    const startFrom = (existing && existing.length) ? existing[0].position : 0;
+    if (startFrom > 0) {
+      statusEl.textContent = 'لقيت ' + startFrom + ' صورة منقولة مسبقاً، راح أكمل من صورة ' + (startFrom + 1) + '...';
+      await new Promise(r => setTimeout(r, 1500));
+    }
     let uploaded = 0;
-    for (let i = 0; i < IMAGES.length; i++) {
+    for (let i = startFrom; i < IMAGES.length; i++) {
       const blob = dataURItoBlob(IMAGES[i]);
       const path = SLUG + '/img-' + (i+1).toString().padStart(3,'0') + '.jpg';
       const { error: upErr } = await sb.storage.from('gallery').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
